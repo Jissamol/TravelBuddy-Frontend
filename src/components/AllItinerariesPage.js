@@ -382,6 +382,11 @@ function AllItinerariesPage() {
       if (token) headers["Authorization"] = `Bearer ${token}`;
 
       const res = await fetch("http://localhost:8000/api/travel/plans/", { headers });
+      if (res.status === 401) {
+        localStorage.removeItem("access");
+        navigate("/login");
+        return;
+      }
       if (!res.ok) throw new Error("Failed to load trips.");
       const data = await res.json();
       setTrips(data);
@@ -458,7 +463,6 @@ function AllItinerariesPage() {
             </Breadcrumb>
           </HeaderLeft>
           <HeaderRight>
-            <FaBell />
             <FaUserCircle size={28} />
           </HeaderRight>
         </TopNav>
