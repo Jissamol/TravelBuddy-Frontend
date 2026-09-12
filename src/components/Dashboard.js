@@ -498,6 +498,8 @@ function Dashboard() {
     }
   };
 
+  const [searchTerm, setSearchTerm] = useState("");
+
   if (loading) {
     return <LoadingContainer>Loading Dashboard...</LoadingContainer>;
   }
@@ -505,6 +507,11 @@ function Dashboard() {
   if (error) {
     return <ErrorContainer>Error loading dashboard: {error}</ErrorContainer>;
   }
+
+  const filteredMarkers = realMarkers.filter(marker => 
+    marker.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (marker.city && marker.city.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
 
   return (
     <DashboardWrapper>
@@ -588,7 +595,26 @@ function Dashboard() {
                 >
                   Dark
                 </ControlPill>
-                <MapSearch placeholder="Search destinations..." />
+                <MapSearch 
+                  placeholder="Search destinations (press Enter)..." 
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onKeyDown={async (e) => {
+                    if (e.key === 'Enter' && searchTerm.trim() !== '') {
+                      try {
+                        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchTerm)}&limit=1`);
+                        const data = await res.json();
+                        if (data && data.length > 0) {
+                          setMapView({ center: [parseFloat(data[0].lat), parseFloat(data[0].lon)], zoom: 6 });
+                        } else {
+                          alert("Location not found.");
+                        }
+                      } catch (err) {
+                        console.error("Search error:", err);
+                      }
+                    }
+                  }}
+                />
               </MapControls>
             </MapHeaderBar>
 
@@ -612,7 +638,7 @@ function Dashboard() {
                     url={mapLayers[mapType]}
                   />
                   <ZoomControl position="topright" />
-                  {realMarkers.map((marker) => (
+                  {filteredMarkers.map((marker) => (
                     <Marker
                       key={marker.id || marker.name}
                       position={[marker.lat, marker.lon]}
@@ -629,7 +655,7 @@ function Dashboard() {
                   ))}
                 </MapContainer>
               </MapCanvas>
-              <MapFooterCard>{realMarkers.length} locations loaded</MapFooterCard>
+              <MapFooterCard>{filteredMarkers.length} locations loaded</MapFooterCard>
             </MapCard>
           </MapSection>
         </DashboardLayout>
