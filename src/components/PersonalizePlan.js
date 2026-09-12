@@ -722,9 +722,42 @@ const handleSubmit = async (e) => {
           if (data.id) savedPlanId = data.id;
         }
       } else if (resp.status === 401) {
-        // token expired — remove and continue as guest
-        localStorage.removeItem("access");
-        localStorage.removeItem("refresh");
+        const refresh_token = localStorage.getItem("refresh");
+        if (refresh_token) {
+          const refreshResp = await fetch("http://localhost:8000/api/token/refresh/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ refresh: refresh_token })
+          });
+          if (refreshResp.ok) {
+            const refreshData = await refreshResp.json();
+            localStorage.setItem("access", refreshData.access);
+            headers["Authorization"] = `Bearer ${refreshData.access}`;
+            
+            // Retry the original request
+            const retryResp = await fetch("http://localhost:8000/api/travel/personalize-plan/", {
+              method: "POST",
+              headers,
+              body: JSON.stringify(payload),
+            });
+            const retryData = await retryResp.json().catch(() => ({}));
+            
+            if (retryResp.status === 201 || retryResp.ok) {
+              savedPlanId = retryData.plan_id || retryData.id || retryData.pk || null;
+              if (!savedPlanId && retryData && typeof retryData === "object") {
+                if (retryData.id) savedPlanId = retryData.id;
+              }
+            } else {
+              console.warn("Plan save retry returned non-OK:", retryResp.status, retryData);
+            }
+          } else {
+            localStorage.removeItem("access");
+            localStorage.removeItem("refresh");
+          }
+        } else {
+          localStorage.removeItem("access");
+          localStorage.removeItem("refresh");
+        }
       } else {
         console.warn("Plan save returned non-OK:", resp.status, data);
       }
