@@ -48,11 +48,21 @@ const LeftPanel = styled.aside`
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+  }
 
   @media (max-width: 900px) {
     width: 100%;
     flex-direction: row;
     overflow-x: auto;
+    overflow-y: hidden;
   }
 `;
 
@@ -562,6 +572,26 @@ function Dashboard() {
                 <DestinationText>
                   <DestinationTitle>Africa</DestinationTitle>
                   <DestinationSubtitle>Safari, deserts, and wild escapes</DestinationSubtitle>
+                </DestinationText>
+              </DestinationCard>
+              <DestinationCard 
+                $image="https://images.unsplash.com/photo-1526392060635-9d6019884377?q=80&w=800&auto=format&fit=crop"
+                onClick={() => setMapView({ center: [-15.0, -60.0], zoom: 3 })}
+                style={{ cursor: 'pointer' }}
+              >
+                <DestinationText>
+                  <DestinationTitle>South America</DestinationTitle>
+                  <DestinationSubtitle>Rainforests, ruins, and vibrant rhythms</DestinationSubtitle>
+                </DestinationText>
+              </DestinationCard>
+              <DestinationCard 
+                $image="https://www.sydneytoptours.com/blog/wp-content/uploads/2019/12/Royal-Botanical-Garden-Sydney.jpg"
+                onClick={() => setMapView({ center: [-25.0, 135.0], zoom: 3 })}
+                style={{ cursor: 'pointer' }}
+              >
+                <DestinationText>
+                  <DestinationTitle>Oceania</DestinationTitle>
+                  <DestinationSubtitle>Outback deserts and coral reefs</DestinationSubtitle>
                 </DestinationText>
               </DestinationCard>
             </DestinationList>
