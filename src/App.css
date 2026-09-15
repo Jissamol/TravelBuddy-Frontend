@@ -1,0 +1,124 @@
+/* Reset some basic elements
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+} */
+/* 
+body {
+  background-color: #ecf0f5;
+  color: #271b1b;
+  line-height: 1.6;
+} */
+
+/* App Container */
+/* .App {
+  max-width: 1200px;
+  margin: auto;
+  padding: 1rem;
+} */
+
+/* Header Styling */
+/* header {
+  background: linear-gradient(135deg, #00b4d8, #0077b6);
+  color: white;
+  padding: 1.5rem 1rem;
+  text-align: center;
+  border-radius: 10px;
+  margin-bottom: 2rem;
+} */
+
+/* header h1 {
+  font-size: 2.5rem;
+  font-weight: bold;
+} */
+
+/* Navigation Bar */
+/* .navbar {
+  display: flex;
+  justify-content: space-around;
+  background-color: #0077b6;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+}
+
+.navbar a {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+} */
+
+/* .navbar a:hover {
+  text-decoration: underline;
+} */
+
+/* Cards or Section Container */
+/* .section {
+  background-color: #ffffff;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  margin-bottom: 2rem;
+} */
+
+/* .section h2 {
+  margin-bottom: 1rem;
+  color: #023e8a;
+} */
+
+/* Button Styling */
+/* button {
+  background-color: #00b4d8;
+  border: none;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #0096c7;
+} */
+
+/* Footer */
+/* footer {
+  text-align: center;
+  padding: 1rem;
+  background-color: #caf0f8;
+  border-top: 2px solid #90e0ef;
+  margin-top: 2rem;
+  border-radius: 10px;
+} */
+
+/* Responsive Grid (Optional) */
+/* .grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+} */
+
+/* Image Styling */
+/* img {
+  max-width: 100%;
+  border-radius: 10px;
+  object-fit: cover;
+} */
+
+/* Input Fields */
+/* input, select, textarea {
+  width: 100%;
+  padding: 0.75rem;
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+input:focus, textarea:focus {
+  outline: none;
+  border-color: #00b4d8;
+} */
