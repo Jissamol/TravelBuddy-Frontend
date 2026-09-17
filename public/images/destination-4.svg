@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 800">
+  <defs>
+    <linearGradient id="grad4" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#d5dee8" />
+      <stop offset="100%" stop-color="#a6b3c2" />
+    </linearGradient>
+  </defs>
+  <rect width="400" height="800" fill="url(#grad4)" />
+  <rect x="0" y="520" width="400" height="200" fill="#8ea0b1" />
+  <rect x="40" y="420" width="40" height="260" fill="#7f92a4" />
+  <rect x="110" y="390" width="40" height="290" fill="#7f92a4" />
+  <rect x="180" y="360" width="40" height="320" fill="#7f92a4" />
+  <rect x="250" y="390" width="40" height="290" fill="#7f92a4" />
+  <rect x="320" y="420" width="40" height="260" fill="#7f92a4" />
+  <rect x="0" y="620" width="400" height="180" fill="rgba(255,255,255,0.3)" />
+</svg>

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="dubai" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f9d86b" />
+      <stop offset="100%" stop-color="#f2a46a" />
+    </linearGradient>
+  </defs>
+  <rect width="400" height="400" fill="url(#dubai)" />
+  <rect y="250" width="400" height="150" fill="#a86f3b" />
+  <rect x="180" y="120" width="40" height="180" fill="#6b4a2c" />
+  <rect x="170" y="100" width="60" height="20" fill="#6b4a2c" />
+</svg>
