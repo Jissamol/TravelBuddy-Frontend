@@ -176,17 +176,18 @@ const MapHeaderBar = styled.div`
 `;
 
 
-
 const MapCard = styled.div`
   flex: 1;
   background: #ffffff;
   position: relative;
   overflow: hidden;
-  min-height: 620px;
+  display: flex;
+  flex-direction: column;
 
   .leaflet-container {
     width: 100%;
     height: 100%;
+    flex: 1;
     border-radius: 0;
   }
 
@@ -263,20 +264,22 @@ const MapSearch = styled.input`
 
 const MapFooterCard = styled.div`
   position: absolute;
-  bottom: 0.9rem;
-  left: 0.9rem;
+  bottom: 1.5rem;
+  left: 1.5rem;
   background: #ffffff;
-  padding: 0.45rem 0.7rem;
-  border-radius: 10px;
-  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.12);
-  font-size: 0.75rem;
+  padding: 0.6rem 1rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.15);
+  font-size: 0.85rem;
+  font-weight: 600;
   color: #1f2a37;
-  z-index: 2;
+  z-index: 1000;
 `;
 
 const MapCanvas = styled.div`
   width: 100%;
   height: 100%;
+  flex: 1;
   display: flex;
 `;
 
@@ -309,17 +312,28 @@ function MapInvalidator() {
   return null;
 }
 
+function MapController({ center, zoom }) {
+  const map = useMap();
+  useEffect(() => {
+    if (center && zoom) {
+      map.flyTo(center, zoom, { duration: 1.5 });
+    }
+  }, [center, zoom, map]);
+  return null;
+}
+
 function Dashboard() {
   const [, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [hasRetried, setHasRetried] = useState(false);
   const [mapType, setMapType] = useState('street');
+  const [mapView, setMapView] = useState({ center: [20, 0], zoom: 2 });
 
   const mapLayers = {
-    street: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    street: "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
     satellite: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-    dark: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+    dark: "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}"
   };
 
   const mapAttributions = {
@@ -367,7 +381,7 @@ function Dashboard() {
   const createMarkerIcon = (image) =>
     L.divIcon({
       className: "photo-marker",
-      html: `<div class="marker-photo" style="background-image:url('${image}')"></div>`,
+      html: `<div class="marker-photo" style="background-image:url('${image || 'https://via.placeholder.com/46'}')"></div>`,
       iconSize: [48, 48],
       iconAnchor: [24, 24],
       popupAnchor: [0, -18],
@@ -394,15 +408,21 @@ function Dashboard() {
     []
   );
 
-  const createNumberIcon = (label) =>
-    L.divIcon({
-      className: "",
-      html: `<div class="number-marker">${label}</div>`,
-      iconSize: [20, 20],
-      iconAnchor: [10, 10],
-    });
+  const [realMarkers, setRealMarkers] = useState([]);
 
   useEffect(() => {
+    const fetchRealMapData = async () => {
+      try {
+        const response = await fetch("http://localhost:8000/api/travel/top-itineraries/");
+        if (response.ok) {
+           const data = await response.json();
+           setRealMarkers(data);
+        }
+      } catch (err) {
+         console.error("Map data fetch error:", err);
+      }
+    };
+
     const verifyTokenAndFetchData = async () => {
       const token = localStorage.getItem("access");
 
@@ -423,6 +443,7 @@ function Dashboard() {
         if (response.ok) {
           const data = await response.json();
           setUserData(data);
+          fetchRealMapData();
         } else if (response.status === 401 && !hasRetried) {
           const refreshed = await tryRefreshToken();
           if (refreshed) {
@@ -496,25 +517,41 @@ function Dashboard() {
               <PanelMenu type="button">≡</PanelMenu>
             </PanelHeader>
             <DestinationList>
-              <DestinationCard $image="https://media.gettyimages.com/id/580501537/photo/mount-rushmore-monument-under-blue-sky-south-dakota-united-states.jpg?s=612x612&w=0&k=20&c=YbDMyWNZ-yGfv9e45KU-1JRIaYutn7nMgEJCczyEY4E=">
+              <DestinationCard 
+                $image="https://media.gettyimages.com/id/580501537/photo/mount-rushmore-monument-under-blue-sky-south-dakota-united-states.jpg?s=612x612&w=0&k=20&c=YbDMyWNZ-yGfv9e45KU-1JRIaYutn7nMgEJCczyEY4E="
+                onClick={() => setMapView({ center: [45.0, -100.0], zoom: 3 })}
+                style={{ cursor: 'pointer' }}
+              >
                 <DestinationText>
                   <DestinationTitle>North America</DestinationTitle>
                   <DestinationSubtitle>City lights and national parks</DestinationSubtitle>
                 </DestinationText>
               </DestinationCard>
-              <DestinationCard $image="https://whereintheworldisnina.com/wp-content/uploads/2023/08/things-to-do-in-europe.jpg">
+              <DestinationCard 
+                $image="https://whereintheworldisnina.com/wp-content/uploads/2023/08/things-to-do-in-europe.jpg"
+                onClick={() => setMapView({ center: [50.0, 10.0], zoom: 4 })}
+                style={{ cursor: 'pointer' }}
+              >
                 <DestinationText>
                   <DestinationTitle>Europe</DestinationTitle>
                   <DestinationSubtitle>Culture, castles, and classic routes</DestinationSubtitle>
                 </DestinationText>
               </DestinationCard>
-              <DestinationCard $image="https://www.topasiatour.com/pic/Vietnam/city/hanoi/attractions/temple-of-literature.jpg">
+              <DestinationCard 
+                $image="https://www.topasiatour.com/pic/Vietnam/city/hanoi/attractions/temple-of-literature.jpg"
+                onClick={() => setMapView({ center: [34.0, 100.0], zoom: 3 })}
+                style={{ cursor: 'pointer' }}
+              >
                 <DestinationText>
                   <DestinationTitle>Asia</DestinationTitle>
                   <DestinationSubtitle>Temples, food, and vibrant cities</DestinationSubtitle>
                 </DestinationText>
               </DestinationCard>
-              <DestinationCard $image="https://cloudfront.safaribookings.com/blog/2022/01/00-the-top15-best-tourist-attractions-in-southafrica-BW-1200px-723x362.jpg">
+              <DestinationCard 
+                $image="https://cloudfront.safaribookings.com/blog/2022/01/00-the-top15-best-tourist-attractions-in-southafrica-BW-1200px-723x362.jpg"
+                onClick={() => setMapView({ center: [0.0, 20.0], zoom: 3 })}
+                style={{ cursor: 'pointer' }}
+              >
                 <DestinationText>
                   <DestinationTitle>Africa</DestinationTitle>
                   <DestinationSubtitle>Safari, deserts, and wild escapes</DestinationSubtitle>
@@ -568,37 +605,31 @@ function Dashboard() {
                   attributionControl={false}
                 >
                   <MapInvalidator />
+                  <MapController center={mapView.center} zoom={mapView.zoom} />
                   <TileLayer
                     key={mapType}
                     attribution={mapAttributions[mapType]}
                     url={mapLayers[mapType]}
                   />
-                  <ZoomControl position="bottomleft" />
-                  {markers.map((marker) => (
+                  <ZoomControl position="topright" />
+                  {realMarkers.map((marker) => (
                     <Marker
-                      key={marker.name}
-                      position={marker.coords}
+                      key={marker.id || marker.name}
+                      position={[marker.lat, marker.lon]}
                       icon={createMarkerIcon(marker.image)}
                     >
                       <Popup>
                         <strong>{marker.name}</strong>
                         <br />
-                        {marker.description}
+                        {marker.city ? `${marker.city}` : ''}
                         <br />
                         <button type="button">Explore</button>
                       </Popup>
                     </Marker>
                   ))}
-                  {numberMarkers.map((marker) => (
-                    <Marker
-                      key={`${marker.label}-${marker.coords[0]}-${marker.coords[1]}`}
-                      position={marker.coords}
-                      icon={createNumberIcon(marker.label)}
-                    />
-                  ))}
                 </MapContainer>
               </MapCanvas>
-              <MapFooterCard>{markers.length + numberMarkers.length} locations loaded</MapFooterCard>
+              <MapFooterCard>{realMarkers.length} locations loaded</MapFooterCard>
             </MapCard>
           </MapSection>
         </DashboardLayout>
