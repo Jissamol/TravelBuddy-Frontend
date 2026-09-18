@@ -448,7 +448,6 @@ function TopItineraries() {
             </Breadcrumb>
           </HeaderLeft>
           <HeaderRight>
-            <FaBell />
             <FaUserCircle size={28} />
           </HeaderRight>
         </TopNav>
@@ -457,20 +456,8 @@ function TopItineraries() {
         <PageHeader>
           <TitleGroup>
             <PageTitle>Nearby Places</PageTitle>
-            <PageSubtitle>Discover attractions near your current location</PageSubtitle>
           </TitleGroup>
           <FilterBar>
-            <FilterTags>
-              {filterOptions.map(tag => (
-                <TagButton 
-                  key={tag} 
-                  $active={activeFilter === tag}
-                  onClick={() => setActiveFilter(tag)}
-                >
-                  {tag}
-                </TagButton>
-              ))}
-            </FilterTags>
             <SortSelect value={sortBy} onChange={(event) => setSortBy(event.target.value)}>
               <option value="Distance">Sort by Distance</option>
               <option value="Rating">Sort by Rating</option>
@@ -515,8 +502,42 @@ function TopItineraries() {
                     key={place.place_id}
                     place={place}
                     onSelect={() => setSelectedPlace(place)}
-                    onAddToTrip={(selected) => {
-                      navigate("/personalize-plan", { state: { destination: selected.name } });
+                    onAddToTrip={async (selected) => {
+                      try {
+                        let locationName = "Current Location";
+                        if (userPosition) {
+                          try {
+                            const geoRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${userPosition.lat}&lon=${userPosition.lon}`);
+                            if (geoRes.ok) {
+                              const geoData = await geoRes.json();
+                              locationName = geoData.display_name || "Current Location";
+                            }
+                          } catch (e) {
+                            console.error("Reverse geocoding failed", e);
+                          }
+                        }
+
+                        const token = localStorage.getItem("access");
+                        const headers = { "Content-Type": "application/json" };
+                        if (token) headers["Authorization"] = `Bearer ${token}`;
+                        
+                        const res = await fetch("http://localhost:8000/api/travel/personalize-plan/", {
+                          method: "POST",
+                          headers,
+                          body: JSON.stringify({
+                            start_location: locationName,
+                            destination: selected.name
+                          })
+                        });
+                        
+                        if (res.ok) {
+                          navigate("/all-itineraries");
+                        } else {
+                          alert("Failed to add trip. Please try again.");
+                        }
+                      } catch (error) {
+                        alert("Error adding trip.");
+                      }
                     }}
                     onDirections={(selected) => {
                       setSelectedPlace(selected);
