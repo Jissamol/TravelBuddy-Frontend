@@ -786,7 +786,7 @@ const handleSubmit = async (e) => {
                 <RouteLine />
                 
                 {/* Starting Location */}
-                <InputGroup>
+                <InputGroup style={{ zIndex: 10 }}>
                   <MarkerContainer><Dot color="#7c5cff" /></MarkerContainer>
                   <InputField>
                     <Input
@@ -800,7 +800,7 @@ const handleSubmit = async (e) => {
                     />
                     <LocationButton
                       type="button"
-                      onClick={() => handleUseMyLocation("startLocation")}
+                      onMouseDown={() => handleUseMyLocation("startLocation")}
                       title="Use My Location"
                     >
                        <FaMapMarkerAlt />
@@ -810,7 +810,7 @@ const handleSubmit = async (e) => {
                         {suggestions.startLocation.map((s, idx) => (
                           <SuggestionItm
                             key={idx}
-                            onClick={() => handleSuggestionClick("startLocation", s)}
+                            onMouseDown={() => handleSuggestionClick("startLocation", s)}
                           >
                             {s.description}
                           </SuggestionItm>
@@ -821,13 +821,13 @@ const handleSubmit = async (e) => {
                 </InputGroup>
 
                 <SwapButtonContainer>
-                  <SwapButton type="button" onClick={handleSwap} title="Swap Locations">
+                  <SwapButton type="button" onMouseDown={handleSwap} title="Swap Locations">
                     <FaExchangeAlt />
                   </SwapButton>
                 </SwapButtonContainer>
 
                 {/* Destination */}
-                <InputGroup>
+                <InputGroup style={{ zIndex: 5 }}>
                   <MarkerContainer><Dot color="#ffd400" /></MarkerContainer>
                   <InputField>
                     <Input
@@ -841,7 +841,7 @@ const handleSubmit = async (e) => {
                     />
                     <LocationButton
                       type="button"
-                      onClick={() => handleUseMyLocation("destination")}
+                      onMouseDown={() => handleUseMyLocation("destination")}
                       title="Use My Location"
                     >
                       <FaMapMarkerAlt />
@@ -851,7 +851,7 @@ const handleSubmit = async (e) => {
                         {suggestions.destination.map((s, idx) => (
                           <SuggestionItm
                             key={idx}
-                            onClick={() => handleSuggestionClick("destination", s)}
+                            onMouseDown={() => handleSuggestionClick("destination", s)}
                           >
                             {s.description}
                           </SuggestionItm>
