@@ -170,7 +170,7 @@ function FoodRestaurantsPage() {
 
     const formData = new FormData();
     formData.append("image", file);
-    formData.append("place_id", place.place_id || place.id); // works for both google and osm
+    formData.append("place_id", place.placeId || place.id); // works for both google and osm
 
     try {
       const res = await fetch("http://localhost:8000/api/travel/places/override-image/", {
@@ -183,8 +183,8 @@ function FoodRestaurantsPage() {
       
       // Update the place in the list to show the new image instantly
       setPlaces(places.map(p => {
-        if ((p.place_id || p.id) === (place.place_id || place.id)) {
-          return { ...p, image: data.image_url };
+        if ((p.placeId || p.id) === (place.placeId || place.id)) {
+          return { ...p, image: data.imageUrl };
         }
         return p;
       }));
@@ -247,7 +247,7 @@ function FoodRestaurantsPage() {
             <Grid>
               {places.map((place) => (
                 <NearbyPlaceCard 
-                  key={place.place_id || place.id} 
+                  key={place.placeId || place.id} 
                   place={place} 
                   onSelect={() => {}} 
                   onAddToTrip={() => alert("This feature can be connected to your active trip!")} 

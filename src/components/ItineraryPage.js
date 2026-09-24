@@ -618,7 +618,7 @@ function ItineraryPage() {
       
       setItineraries(itineraries.map(i => {
         if (i.id === item.id) {
-          return { ...i, image: data.image_url };
+          return { ...i, image: data.imageUrl };
         }
         return i;
       }));
