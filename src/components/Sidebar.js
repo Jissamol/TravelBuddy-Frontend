@@ -7,6 +7,7 @@ import {
   FaPlusCircle,
   FaSignOutAlt,
   FaSuitcaseRolling,
+  FaUtensils,
 } from "react-icons/fa";
 
 const SidebarContainer = styled.aside`
@@ -86,6 +87,9 @@ function Sidebar() {
         </SidebarLink>
         <SidebarLink onClick={() => navigate("/all-itineraries")}>
           <FaPlane /> My Trips
+        </SidebarLink>
+        <SidebarLink onClick={() => navigate("/food-restaurants")}>
+          <FaUtensils /> Food & Restaurants
         </SidebarLink>
       </SidebarMenu>
       <LogoutButton onClick={handleLogout}>

@@ -13,9 +13,11 @@ import {
   FaEye,
   FaChevronRight,
   FaBell,
-  FaUserCircle
+  FaUserCircle,
+  FaShareAlt
 } from "react-icons/fa";
 import Sidebar from "./Sidebar";
+import ShareModal from "./ShareModal";
 
 // ---------------- Styled Components ----------------
 const DashboardContainer = styled.div`
@@ -259,6 +261,11 @@ const ActionButton = styled.button`
     color: #b91c1c;
     &:hover { background: #fee2e2; }
   }
+  &.share {
+    background: #fdf4ff;
+    color: #c026d3;
+    &:hover { background: #fae8ff; }
+  }
 `;
 
 const ModalOverlay = styled.div`
@@ -374,6 +381,10 @@ function AllItinerariesPage() {
   const [editingTrip, setEditingTrip] = useState(null);
   const [editForm, setEditForm] = useState({ start_location: '', destination: '' });
 
+  // Share Modal State
+  const [isShareModalOpen, setShareModalOpen] = useState(false);
+  const [shareTrip, setShareTrip] = useState(null);
+
   const fetchTrips = async () => {
     try {
       setLoading(true);
@@ -442,6 +453,34 @@ function AllItinerariesPage() {
       const updatedTrip = await res.json();
       setTrips(trips.map(t => t.id === updatedTrip.id ? updatedTrip : t));
       setEditModalOpen(false);
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
+  const openShareModal = (trip) => {
+    setShareTrip(trip);
+    setShareModalOpen(true);
+  };
+
+  const handleTogglePublic = async (isPublic) => {
+    try {
+      const token = localStorage.getItem("access");
+      const headers = { "Content-Type": "application/json" };
+      if (token) headers["Authorization"] = `Bearer ${token}`;
+      
+      const res = await fetch(`http://localhost:8000/api/travel/trips/visibility/${shareTrip.id}/`, {
+        method: "PATCH",
+        headers,
+        body: JSON.stringify({ is_public: isPublic })
+      });
+      if (!res.ok) throw new Error("Failed to update visibility.");
+      
+      const updated = await res.json();
+      
+      const updatedTrip = { ...shareTrip, is_public: updated.is_public };
+      setShareTrip(updatedTrip);
+      setTrips(trips.map(t => t.id === updatedTrip.id ? updatedTrip : t));
     } catch (err) {
       alert(err.message);
     }
@@ -529,6 +568,9 @@ function AllItinerariesPage() {
                       <ActionButton className="edit" onClick={() => openEditModal(trip)}>
                         <FaEdit /> Edit
                       </ActionButton>
+                      <ActionButton className="share" onClick={() => openShareModal(trip)}>
+                        <FaShareAlt /> Share
+                      </ActionButton>
                       <ActionButton className="delete" onClick={() => handleDelete(trip.id)}>
                         <FaTrash /> Delete
                       </ActionButton>
@@ -567,6 +609,15 @@ function AllItinerariesPage() {
             </ModalActions>
           </ModalContent>
         </ModalOverlay>
+      )}
+
+      {/* Share Modal */}
+      {isShareModalOpen && shareTrip && (
+        <ShareModal 
+          trip={shareTrip}
+          onClose={() => setShareModalOpen(false)}
+          onTogglePublic={handleTogglePublic}
+        />
       )}
     </DashboardContainer>
   );
