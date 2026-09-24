@@ -13,6 +13,7 @@ import {
   FaSuitcaseRolling,
   FaShareAlt,
   FaPlusCircle,
+  FaCamera
 } from "react-icons/fa";
 import Sidebar from "./Sidebar";
 import LiveRoute from "./LiveRoute";
@@ -218,6 +219,33 @@ const Image = styled.img`
   width: 100%;
   height: 240px;
   object-fit: cover;
+`;
+
+const ImageUploadOverlay = styled.label`
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(255, 255, 255, 0.8);
+  color: #0f172a;
+  padding: 0.5rem;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  
+  &:hover {
+    background: #ffffff;
+    transform: scale(1.1);
+    color: #1e3a8a;
+  }
+  
+  input {
+    display: none;
+  }
 `;
 
 const Content = styled.div`
@@ -567,6 +595,38 @@ function ItineraryPage() {
     }
   };
 
+  const handleImageUpload = async (e, item) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!item.id) {
+      alert("This itinerary item isn't saved yet. Please wait for it to be saved before uploading an image.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("custom_image", file);
+
+    try {
+      const res = await fetch(`http://localhost:8000/api/travel/itineraries/${item.id}/image/`, {
+        method: "PATCH",
+        body: formData,
+      });
+
+      if (!res.ok) throw new Error("Failed to upload image.");
+      const data = await res.json();
+      
+      setItineraries(itineraries.map(i => {
+        if (i.id === item.id) {
+          return { ...i, image: data.image_url };
+        }
+        return i;
+      }));
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
   const getCoordinates = async (locationName) => {
     try {
       const res = await fetch(
@@ -730,6 +790,18 @@ function ItineraryPage() {
                             e.target.src = fallbackImage;
                           }}
                         />
+                        <ImageUploadOverlay
+                          title="Change image for this itinerary"
+                          onClick={(e) => e.stopPropagation()}
+                          style={{ top: 'auto', bottom: '260px', left: '10px' }} // position over the image, above the content
+                        >
+                          <FaCamera />
+                          <input 
+                            type="file" 
+                            accept="image/*" 
+                            onChange={(e) => handleImageUpload(e, item)}
+                          />
+                        </ImageUploadOverlay>
                         <Content>
                           <Name>{item.name}</Name>
                           <InfoRow>

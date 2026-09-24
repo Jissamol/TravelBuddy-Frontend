@@ -164,6 +164,35 @@ function FoodRestaurantsPage() {
     );
   };
 
+  const handleImageUpload = async (e, place) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("image", file);
+    formData.append("place_id", place.place_id || place.id); // works for both google and osm
+
+    try {
+      const res = await fetch("http://localhost:8000/api/travel/places/override-image/", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) throw new Error("Failed to upload image.");
+      const data = await res.json();
+      
+      // Update the place in the list to show the new image instantly
+      setPlaces(places.map(p => {
+        if ((p.place_id || p.id) === (place.place_id || place.id)) {
+          return { ...p, image: data.image_url };
+        }
+        return p;
+      }));
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
   return (
     <DashboardContainer>
       <Sidebar />
@@ -218,11 +247,12 @@ function FoodRestaurantsPage() {
             <Grid>
               {places.map((place) => (
                 <NearbyPlaceCard 
-                  key={place.place_id} 
+                  key={place.place_id || place.id} 
                   place={place} 
                   onSelect={() => {}} 
                   onAddToTrip={() => alert("This feature can be connected to your active trip!")} 
                   onDirections={() => window.open(`https://www.google.com/maps/search/?api=1&query=${place.lat},${place.lon}`, "_blank")}
+                  onImageUpload={handleImageUpload}
                 />
               ))}
             </Grid>

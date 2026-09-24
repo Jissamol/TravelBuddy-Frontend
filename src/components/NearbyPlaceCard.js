@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { FaMapMarkerAlt, FaStar, FaCity, FaPlus, FaRoute } from "react-icons/fa";
+import { FaMapMarkerAlt, FaStar, FaCity, FaPlus, FaRoute, FaCamera } from "react-icons/fa";
 
 const FALLBACK_PLACE_IMAGE =
   "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='800' height='540' viewBox='0 0 800 540'><rect width='800' height='540' fill='%23eef2f7'/><rect x='60' y='60' width='680' height='420' rx='28' fill='%23f8fafc' stroke='%23e2e8f0'/><circle cx='400' cy='220' r='70' fill='%23e2e8f0'/><path d='M300 360h200' stroke='%2394a3b8' stroke-width='12' stroke-linecap='round'/><path d='M260 400h280' stroke='%23cbd5e1' stroke-width='10' stroke-linecap='round'/></svg>";
@@ -47,6 +47,33 @@ const CardImage = styled.img`
 
   ${PlaceCard}:hover & {
     transform: scale(1.05);
+  }
+`;
+
+const ImageUploadOverlay = styled.label`
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(255, 255, 255, 0.8);
+  color: #0f172a;
+  padding: 0.5rem;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  
+  &:hover {
+    background: #ffffff;
+    transform: scale(1.1);
+    color: #1e3a8a;
+  }
+  
+  input {
+    display: none;
   }
 `;
 
@@ -159,6 +186,7 @@ function NearbyPlaceCard({
   onSelect,
   onAddToTrip,
   onDirections,
+  onImageUpload,
 }) {
   const [loaded, setLoaded] = useState(false);
 
@@ -185,6 +213,19 @@ function NearbyPlaceCard({
             setLoaded(true);
           }}
         />
+        {onImageUpload && (
+          <ImageUploadOverlay
+            title="Change image for everyone"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <FaCamera />
+            <input 
+              type="file" 
+              accept="image/*" 
+              onChange={(e) => onImageUpload(e, place)}
+            />
+          </ImageUploadOverlay>
+        )}
         {distanceLabel && (
           <DistanceBadge>
             <FaMapMarkerAlt color="#1e3a8a" /> {distanceLabel}
