@@ -14,7 +14,8 @@ import {
   FaChevronRight,
   FaBell,
   FaUserCircle,
-  FaShareAlt
+  FaShareAlt,
+  FaCamera
 } from "react-icons/fa";
 import Sidebar from "./Sidebar";
 import ShareModal from "./ShareModal";
@@ -178,6 +179,33 @@ const CardImage = styled.img`
 
   ${TripCard}:hover & {
     transform: scale(1.05);
+  }
+`;
+
+const ImageUploadOverlay = styled.label`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(255, 255, 255, 0.8);
+  color: #0f172a;
+  padding: 0.5rem;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  
+  &:hover {
+    background: #ffffff;
+    transform: scale(1.1);
+    color: #1e3a8a;
+  }
+  
+  input {
+    display: none;
   }
 `;
 
@@ -486,6 +514,32 @@ function AllItinerariesPage() {
     }
   };
 
+  const handleImageUpload = async (e, tripId) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("cover_image", file);
+
+    try {
+      const token = localStorage.getItem("access");
+      const headers = {};
+      if (token) headers["Authorization"] = `Bearer ${token}`;
+
+      const res = await fetch(`http://localhost:8000/api/travel/plans/${tripId}/`, {
+        method: "PATCH",
+        headers,
+        body: formData,
+      });
+
+      if (!res.ok) throw new Error("Failed to upload image.");
+      const updatedTrip = await res.json();
+      setTrips(trips.map((t) => (t.id === updatedTrip.id ? updatedTrip : t)));
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
   return (
     <DashboardContainer>
       <Sidebar />
@@ -537,11 +591,21 @@ function AllItinerariesPage() {
           ) : (
             <Grid>
               {trips.map((trip, idx) => {
-                const coverImg = COVER_IMAGES[idx % COVER_IMAGES.length];
+                const coverImg = trip.coverImage 
+                                  ? (trip.coverImage.startsWith('http') ? trip.coverImage : `http://localhost:8000${trip.coverImage}`)
+                                  : COVER_IMAGES[idx % COVER_IMAGES.length];
                 return (
                 <TripCard key={trip.id}>
                   <CardImageWrap>
                     <CardImage src={coverImg} alt="Trip cover" />
+                    <ImageUploadOverlay title="Change cover image">
+                      <FaCamera />
+                      <input 
+                        type="file" 
+                        accept="image/*" 
+                        onChange={(e) => handleImageUpload(e, trip.id)}
+                      />
+                    </ImageUploadOverlay>
                   </CardImageWrap>
                   
                   <CardBody>
