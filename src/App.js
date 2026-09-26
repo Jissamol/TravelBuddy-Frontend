@@ -10,6 +10,7 @@ import TopItineraries from './components/TopItineraries';
 import AllItinerariesPage from './components/AllItinerariesPage';
 import TripJoinPage from './components/TripJoinPage';
 import FoodRestaurantsPage from './components/FoodRestaurantsPage';
+import AccommodationPage from './components/AccommodationPage';
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
             <Route path="/all-itineraries" element={<AllItinerariesPage />} />
             <Route path="/join/:token" element={<TripJoinPage />} />
             <Route path="/food-restaurants" element={<FoodRestaurantsPage />} />
+            <Route path="/accommodations" element={<AccommodationPage />} />
 
         </Routes>
       </div>

@@ -88,6 +88,9 @@ function Sidebar() {
         <SidebarLink onClick={() => navigate("/all-itineraries")}>
           <FaPlane /> My Trips
         </SidebarLink>
+        <SidebarLink onClick={() => navigate("/accommodations")}>
+          <FaSuitcaseRolling /> Accommodations
+        </SidebarLink>
         <SidebarLink onClick={() => navigate("/food-restaurants")}>
           <FaUtensils /> Food & Restaurants
         </SidebarLink>
