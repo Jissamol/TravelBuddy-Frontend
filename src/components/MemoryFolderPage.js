@@ -200,6 +200,10 @@ function MemoryFolderPage() {
       const res = await fetch(`http://localhost:8000/api/travel/memories/folders/${folderId}/`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("access")}` }
       });
+      if (res.status === 401) {
+        console.error("Session expired.");
+        return;
+      }
       if (res.ok) setFolder(await res.json());
     } catch (err) {
       console.error(err);
@@ -211,6 +215,7 @@ function MemoryFolderPage() {
       const res = await fetch(`http://localhost:8000/api/travel/memories/folders/${folderId}/images/`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("access")}` }
       });
+      if (res.status === 401) return;
       if (res.ok) setImages(await res.json());
     } catch (err) {
       console.error(err);
@@ -226,11 +231,20 @@ function MemoryFolderPage() {
       form.append("image", files[i]);
 
       try {
-        await fetch(`http://localhost:8000/api/travel/memories/folders/${folderId}/images/`, {
+        const res = await fetch(`http://localhost:8000/api/travel/memories/folders/${folderId}/images/`, {
           method: "POST",
           headers: { Authorization: `Bearer ${localStorage.getItem("access")}` },
           body: form
         });
+        if (res.status === 401) {
+          alert("Your session has expired. Please log out and log back in to upload photos.");
+          return;
+        }
+        if (!res.ok) {
+          const errData = await res.text();
+          console.error("Upload failed", errData);
+          alert(`Failed to upload ${files[i].name}`);
+        }
       } catch (err) {
         console.error("Upload failed for file", files[i].name);
       }

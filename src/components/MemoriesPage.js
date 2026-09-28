@@ -190,6 +190,11 @@ function MemoriesPage() {
       const res = await fetch("http://localhost:8000/api/travel/memories/folders/", {
         headers: { Authorization: `Bearer ${localStorage.getItem("access")}` }
       });
+      if (res.status === 401) {
+        console.error("Session expired.");
+        // Optionally redirect to login or show alert
+        return;
+      }
       if (res.ok) {
         const data = await res.json();
         setFolders(data);
@@ -212,11 +217,19 @@ function MemoriesPage() {
         },
         body: JSON.stringify({ name: newFolderName, description: newFolderDesc })
       });
+      
+      if (res.status === 401) {
+        alert("Your session has expired. Please log out and log back in to save memories.");
+        return;
+      }
+
       if (res.ok) {
         setShowModal(false);
         setNewFolderName("");
         setNewFolderDesc("");
         fetchFolders();
+      } else {
+        alert("Failed to create folder.");
       }
     } catch (err) {
       console.error(err);
