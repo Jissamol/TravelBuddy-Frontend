@@ -8,6 +8,7 @@ import {
   FaSignOutAlt,
   FaSuitcaseRolling,
   FaUtensils,
+  FaCamera,
 } from "react-icons/fa";
 
 const SidebarContainer = styled.aside`
@@ -93,6 +94,9 @@ function Sidebar() {
         </SidebarLink>
         <SidebarLink onClick={() => navigate("/food-restaurants")}>
           <FaUtensils /> Food & Restaurants
+        </SidebarLink>
+        <SidebarLink onClick={() => navigate("/memories")}>
+          <FaCamera /> Travel Memories
         </SidebarLink>
       </SidebarMenu>
       <LogoutButton onClick={handleLogout}>

@@ -11,6 +11,8 @@ import AllItinerariesPage from './components/AllItinerariesPage';
 import TripJoinPage from './components/TripJoinPage';
 import FoodRestaurantsPage from './components/FoodRestaurantsPage';
 import AccommodationPage from './components/AccommodationPage';
+import MemoriesPage from './components/MemoriesPage';
+import MemoryFolderPage from './components/MemoryFolderPage';
 
 function App() {
   return (
@@ -29,6 +31,8 @@ function App() {
             <Route path="/join/:token" element={<TripJoinPage />} />
             <Route path="/food-restaurants" element={<FoodRestaurantsPage />} />
             <Route path="/accommodations" element={<AccommodationPage />} />
+            <Route path="/memories" element={<MemoriesPage />} />
+            <Route path="/memories/:folderId" element={<MemoryFolderPage />} />
 
         </Routes>
       </div>
